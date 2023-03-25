@@ -4,8 +4,8 @@ import json
 import os
 from flask import Flask, request
 from flask_sock import Sock, ConnectionClosed
-from twilio.twiml.voice_response import VoiceResponse, Start
-from twilio.rest import Client
+from twilio.twiml.voice_response import VoiceResponse, Start, Dial, Client
+from twilio.rest import Client as TwilioClient
 import vosk
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
@@ -14,12 +14,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 sock = Sock(app)
-twilio_client = Client()
+twilio_client = TwilioClient()
 model = vosk.Model('../model')
 
 CL = '\x1b[0K'
 BS = '\x08'
 
+TEST_IDENTITY = 'user'
 
 @app.route('/call', methods=['POST'])
 def call():
@@ -28,8 +29,13 @@ def call():
     start = Start()
     start.stream(url=f'wss://{request.host}/stream')
     response.append(start)
-    response.say('Please leave a message')
-    response.pause(length=60)
+    # response.say('Please leave a message')
+    # response.pause(length=60)
+    dial = Dial()
+    client = Client()
+    client.identity(TEST_IDENTITY)
+    dial.append(client)
+    response.append(dial)
     print(f'Incoming call from {request.form["From"]}')
     return str(response), 200, {'Content-Type': 'text/xml'}
 
@@ -42,10 +48,8 @@ def get_token():
     api_secret = os.environ['TWILIO_API_KEY_SECRET']
 
     # required for Chat grants
-    identity = 'user'
-
     # Create access token with credentials
-    token = AccessToken(account_sid, api_key, api_secret, identity=identity)
+    token = AccessToken(account_sid, api_key, api_secret, identity=TEST_IDENTITY)
 
     # Create a Voice grant and add to token
     voice_grant = VoiceGrant(
