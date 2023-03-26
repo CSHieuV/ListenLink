@@ -52,6 +52,7 @@ def get_predictions(values):
 
 @app.route("/predictions", methods=["GET"])
 def test():
+    global predictions
     return predictions, 200
 
        #  'The confidence levels of the labels are: {}'.format(
