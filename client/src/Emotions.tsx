@@ -73,7 +73,7 @@ const Emotions = () => {
         >
             <Text fz="xl" fw={700}>Tendencies Detector</Text>
             <Bar options={options} data={data} />
-            <Text fz="xl" fw={700}>{prediction.prediction}</Text>
+            <Text fz="xl" fw={700}>Main emotion: {prediction.prediction}</Text>
         </Container>
     )
 }
