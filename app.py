@@ -118,8 +118,8 @@ def stream(ws):
             if rec.AcceptWaveform(audio):
                 r = json.loads(rec.Result())
                 # if r is words, then toss into classify and return main classification with statistical value
-                print(CL + r['text'] + ' ', end='')
-                if(time.time() - initial_time > 10):
+                print(r['text'] + ' ', end='')
+                if(r['text']!= "" and time.time() - initial_time > 10):
                     initial_time = time.time()
                     get_predictions(r['text'])
             # else:
