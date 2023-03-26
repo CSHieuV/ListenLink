@@ -41,7 +41,7 @@ def index():
 
 @app.route("/testthing")
 def test():
-    co = cohere.Client("aom1IYTexwzd92kKV9XdytsDfcXbAvtVIVOpcJJz")
+    co = cohere.Client("apikey goes here")
     response = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
                        inputs=["I feel proud of myself for making a positive impact on others.",
 "I'm excited to see where my creativity takes me. "])
