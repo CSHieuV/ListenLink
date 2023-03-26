@@ -1,1 +1,1 @@
-web: gunicorn app:BackendFlask/ListenLink/app.py
+web: gunicorn app:app
