@@ -10,9 +10,6 @@ import vosk
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
 from flask_cors import CORS
-import cohere
-
-
 
 app = Flask(__name__)
 CORS(app)
