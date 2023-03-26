@@ -14,8 +14,9 @@ import cohere
 import requests
 import random
 import json
-predictions = {}
 
+
+predictions = {}
 app = Flask(__name__)
 CORS(app)
 sock = Sock(app)
@@ -38,10 +39,10 @@ TEST_IDENTITY = 'user'
 
 @app.route("/")
 def index():
-
     return "hello, World", 200
 
 def get_predictions():
+    global predictions
     co = cohere.Client(os.environ["COHERE_KEY"])
     predictions = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
                        inputs=["I feel proud of myself for making a positive impact on others. I'm excited to see where my creativity takes me. "])
