@@ -39,14 +39,18 @@ def index():
 
     return "hello, World", 200
 
+def get_predictions():
+    co = cohere.Client("aom1IYTexwzd92kKV9XdytsDfcXbAvtVIVOpcJJz")
+    predictions = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
+                       inputs=["I feel proud of myself for making a positive impact on others. I'm excited to see where my creativity takes me. "])
+    main_prediction = predictions[0].prediction # this will eventually be returned in the response, have yet to deal with it
+    predictions = {k: v[0] for k, v in predictions[0].labels.items()}
+    return predictions
+
 @app.route("/testthing")
 def test():
-    co = cohere.Client("apikey goes here")
-    response = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
-                       inputs=["I feel proud of myself for making a positive impact on others.",
-"I'm excited to see where my creativity takes me. "])
-
-    return "this returns " + str(response[0].prediction) + "with " + str(response[0].confidence), 200
+    response = get_predictions()
+    return response, 200
 
        #  'The confidence levels of the labels are: {}'.format(
        # response.classifications) , 200
