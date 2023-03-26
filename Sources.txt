@@ -1,5 +1,8 @@
-// This source helped us
+// This source helped us for twilio
 https://www.twilio.com/blog/transcribe-phone-calls-text-real-time-twilio-vosk
+
+//
+
 
 
 

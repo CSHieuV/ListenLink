@@ -102,3 +102,4 @@ export default function AppNavbar({ hasCall }: NavbarProps) {
         </Navbar>
     )
 }
+
