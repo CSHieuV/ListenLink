@@ -2,7 +2,7 @@ import audioop
 import base64
 import json
 import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sock import Sock, ConnectionClosed
 from twilio.twiml.voice_response import VoiceResponse, Start, Dial, Client
 from twilio.rest import Client as TwilioClient
@@ -11,8 +11,8 @@ from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
 from flask_cors import CORS
 import cohere
-
-
+import requests
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -36,7 +36,21 @@ TEST_IDENTITY = 'user'
 
 @app.route("/")
 def index():
+
     return "hello, World", 200
+
+@app.route("/testthing")
+def test():
+    co = cohere.Client("aom1IYTexwzd92kKV9XdytsDfcXbAvtVIVOpcJJz")
+    response = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
+                       inputs=["I feel proud of myself for making a positive impact on others.",
+"I'm excited to see where my creativity takes me. "])
+
+    return "this returns " + str(response[0].prediction) + "with " + str(response[0].confidence), 200
+
+       #  'The confidence levels of the labels are: {}'.format(
+       # response.classifications) , 200
+
 @app.route('/call', methods=['POST'])
 def call():
     """Accept a phone call."""
