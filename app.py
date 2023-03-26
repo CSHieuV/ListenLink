@@ -12,7 +12,9 @@ from twilio.jwt.access_token.grants import VoiceGrant
 from flask_cors import CORS
 import cohere
 import requests
+import random
 import json
+predictions = {}
 
 app = Flask(__name__)
 CORS(app)
@@ -45,12 +47,11 @@ def get_predictions():
                        inputs=["I feel proud of myself for making a positive impact on others. I'm excited to see where my creativity takes me. "])
     main_prediction = predictions[0].prediction # this will eventually be returned in the response, have yet to deal with it
     predictions = {k: v[0] for k, v in predictions[0].labels.items()}
-    return predictions
+    predictions["test value"] = random.random() * 100;
 
-@app.route("/testthing")
+@app.route("/testthing", methods=["GET"])
 def test():
-    response = get_predictions()
-    return response, 200
+    return predictions, 200
 
        #  'The confidence levels of the labels are: {}'.format(
        # response.classifications) , 200
