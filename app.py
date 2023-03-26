@@ -16,7 +16,7 @@ CORS(app)
 sock = Sock(app)
 twilio_client = TwilioClient()
 model = vosk.Model('model')
-public_url = "listenlink.herokuapp.com"
+public_url = "https://listenlink.herokuapp.com"
 # else:
 #     from pyngrok import ngrok
 #     port = 5002
