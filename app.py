@@ -107,9 +107,11 @@ def stream(ws):
             audio = audioop.ratecv(audio, 2, 1, 8000, 16000, None)[0]
             if rec.AcceptWaveform(audio):
                 r = json.loads(rec.Result())
+                # if r is words, then toss into classify and return main classification with statistical value
                 print(CL + r['text'] + ' ', end='', flush=True)
             else:
                 r = json.loads(rec.PartialResult())
+                # if r is words, then toss into classify and return main classification with statistical value
                 print(CL + r['partial'] + BS * len(r['partial']), end='', flush=True)
 
 
