@@ -121,7 +121,7 @@ def stream(ws):
                 # print(r['text'])
                 val = r['text']
                 val = val.strip()
-                if (val!= "" and (time.time() - initial_time) > 13):
+                if (val!= "" and (time.time() - initial_time) > 5):
                     initial_time = time.time()
                     print(val)
                     get_predictions(val)
