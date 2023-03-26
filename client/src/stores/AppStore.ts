@@ -1,5 +1,6 @@
 import { Device, Call } from "@twilio/voice-sdk";
 import { observable, action, computed } from "mobx";
+import { getTwilioToken } from "../api";
 
 export class AppStore {
     @observable
@@ -9,7 +10,12 @@ export class AppStore {
     twilioDevice?: Device;
 
     @observable
-    twilioIncomingPhoneNo?: string;
+    currentCall?: Call;
+
+    @computed
+    get twilioIncomingPhoneNo() {
+        return this.currentCall?.parameters?.From;
+    }
 
     @computed
     get hasCall() {
@@ -17,7 +23,12 @@ export class AppStore {
     }
 
     @action
-    setupTwilioDevice(token: string) {
+    resetCurrentCall() {
+        this.currentCall = undefined;
+    }
+
+    @action
+    setupTwilioDevice(token: string, { open, close }: {open: () => void, close: () => void}) {
         this.twilioToken = token;
         this.twilioDevice = new Device(token);
         // event listeners
@@ -28,30 +39,44 @@ export class AppStore {
             console.error({ twilioError, call });
         })
         this.twilioDevice.on('incoming', (call: Call) => {
-            // accept incoming call
-
             // 1) get flow sid?
             // 2) get caller ID from Call.paramteres map
+            this.currentCall = call;
 
-            // const incomingNumber = ...
-            // const incomingMessage = `Incoming call from ${incomingNumber}`;
-            // this.twilioIncomingPhoneNo = incomingNumber;
+            call.on('cancel', () => {
+                this.resetCurrentCall();
+                close();
+            });
+            call.on('disconnect', () => {
+                this.resetCurrentCall();
+                close();
+            });
 
-            // invoke a modal (Ok/cancel modal)
-
-            // await the result
-
-            // if accepted,
-            call.accept();
+            // invoke a confirmation modal
+            open();
         })
         this.twilioDevice.register();
     }
 
     @action
-    init() {
-        console.log('init');
+    async init({ open, close }: {open: () => void, close: () => void}) {
         // call api to get twilio token
-        // then call set up twilio device
-        // this.setupTwilioDevice();
+        const token = await getTwilioToken();
+        if (token) this.setupTwilioDevice(token, { open, close });
+    }
+
+    @action
+    acceptCall(close: () => void) {
+        if (!this.currentCall) return;
+        this.currentCall.accept();
+        close();
+    }
+
+    @action
+    rejectCall(close: () => void) {
+        if (!this.currentCall) return;
+        this.currentCall.reject();
+        this.resetCurrentCall();
+        close();
     }
 }
