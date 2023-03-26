@@ -15,7 +15,6 @@ import requests
 import random
 import json
 import time
-import string
 
 
 predictions = {}
@@ -120,9 +119,11 @@ def stream(ws):
                 r = json.loads(rec.Result())
                 # if r is words, then toss into classify and return main classification with statistical value
                 # print(r['text'])
-                val = string.strip(val)
-                if (string.strip(val)!= "" and (time.time() - initial_time) > 13):
+                val = r['text']
+                val = val.strip()
+                if (val!= "" and (time.time() - initial_time) > 13):
                     initial_time = time.time()
+                    print(val)
                     get_predictions(val)
                 elif val=="":
                     print("empty string")
