@@ -42,7 +42,7 @@ def index():
     return "hello, World", 200
 
 def get_predictions():
-    co = cohere.Client("aom1IYTexwzd92kKV9XdytsDfcXbAvtVIVOpcJJz")
+    co = cohere.Client(os.environ["COHERE_KEY"])
     predictions = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
                        inputs=["I feel proud of myself for making a positive impact on others. I'm excited to see where my creativity takes me. "])
     main_prediction = predictions[0].prediction # this will eventually be returned in the response, have yet to deal with it
