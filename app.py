@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 sock = Sock(app)
 twilio_client = TwilioClient()
-model = vosk.Model('../model')
+model = vosk.Model('model')
 
 CL = '\x1b[0K'
 BS = '\x08'
