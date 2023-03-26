@@ -14,6 +14,7 @@ import cohere
 import requests
 import random
 import json
+import time
 
 
 predictions = {}
@@ -32,8 +33,6 @@ number = twilio_client.incoming_phone_numbers.list()[0]
 number.update(voice_url=public_url + '/call')
 print(f'Waiting for calls on {number.phone_number}')
 
-CL = '\x1b[0K'
-BS = '\x08'
 
 TEST_IDENTITY = 'user'
 
@@ -41,18 +40,18 @@ TEST_IDENTITY = 'user'
 def index():
     return "hello, World", 200
 
-def get_predictions():
+def get_predictions(values):
     global predictions
     co = cohere.Client(os.environ["COHERE_KEY"])
     predictions = co.classify(model="87434abe-cca3-4825-8f05-53657e3e9bae-ft",
-                       inputs=["I feel proud of myself for making a positive impact on others. I'm excited to see where my creativity takes me. "])
+                       inputs=[values])
     main_prediction = predictions[0].prediction # this will eventually be returned in the response, have yet to deal with it
     predictions = {k: v[0] for k, v in predictions[0].labels.items()}
-    predictions["test value"] = random.random() * 100;
+    predictions["prediction"] = main_prediction
 
-@app.route("/testthing", methods=["GET"])
+
+@app.route("/predictions", methods=["GET"])
 def test():
-    get_predictions()
     return predictions, 200
 
        #  'The confidence levels of the labels are: {}'.format(
@@ -100,6 +99,7 @@ def get_token():
 @sock.route('/stream')
 def stream(ws):
     """Receive and transcribe audio stream."""
+    initial_time = -1
     rec = vosk.KaldiRecognizer(model, 16000)
     while True:
         message = ws.receive()
@@ -115,11 +115,14 @@ def stream(ws):
             if rec.AcceptWaveform(audio):
                 r = json.loads(rec.Result())
                 # if r is words, then toss into classify and return main classification with statistical value
-                print(CL + r['text'] + ' ', end='', flush=True)
-            else:
-                r = json.loads(rec.PartialResult())
+                print(CL + r['text'] + ' ', end='')
+                if(time.time() - initial_time > 10):
+                    initial_time = time.time()
+                    get_predictions(r['text'])
+            # else:
+                # r = json.loads(rec.PartialResult())
                 # if r is words, then toss into classify and return main classification with statistical value
-                print(CL + r['partial'] + BS * len(r['partial']), end='', flush=True)
+                # print(CL + r['partial'] + BS * len(r['partial']), end='', flush=True)
 
 
 if __name__ == '__main__':
