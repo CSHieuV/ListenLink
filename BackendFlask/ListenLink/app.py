@@ -22,6 +22,9 @@ BS = '\x08'
 
 TEST_IDENTITY = 'user'
 
+@app.route("/")
+def index():
+    return "hello, World", 200
 @app.route('/call', methods=['POST'])
 def call():
     """Accept a phone call."""
