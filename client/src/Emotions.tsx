@@ -9,6 +9,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import { predictionEndpoint } from './api';
+import { useEffect, useState } from 'react';
 
 ChartJS.register(
     CategoryScale,
@@ -27,30 +29,53 @@ const options = {
         }
     },
 }
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+const labels = [
+    'Depressed',
+    'Frustrated',
+    'Hopeless',
+    'Lonely',
+    'Overwhelmed',
+    'Positive',
+    'Suicidal',
+    'Uselessness'
+];
 
-const data = {
-    labels,
-    datasets: [
-        {
-            label: 'Dataset 1',
-            data: labels.map(() => Math.random()),
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+const Emotions = () => {
+    const [prediction, setPrediction] = useState<{[label: string]: number}>({});
+    const data = {
+        labels,
+        datasets: [
+            {
+                label: 'Confidence Level',
+                data: labels.map((label) => prediction[label]),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+        ],
+    }
+
+    useEffect(() => {
+        const intervalId = setInterval(async () => {
+            const response = await predictionEndpoint();
+            if (Object.keys(response).length > 0) setPrediction(response);
+        }, 5000)
+
+        return () => {
+            clearInterval(intervalId);
         }
-        // do we want confidence as another dataset?
-    ],
+    }, [])
+    
+    return (
+        <Container
+            my={40}
+            sx={{
+                minWidth: '800px'
+            }}
+        >
+            <Text fz="xl" fw={700}>Tendencies Detector</Text>
+            <Bar options={options} data={data} />
+            <Text fz="xl" fw={700}>{prediction.prediction}</Text>
+        </Container>
+    )
 }
-
-const Emotions = () => (
-    <Container
-        my={40}
-        sx={{
-            minWidth: '800px'
-        }}
-    >
-        <Text fz="xl" fw={700}>Tendencies Detector</Text>
-        <Bar options={options} data={data} />
-    </Container>
-)
 
 export default Emotions

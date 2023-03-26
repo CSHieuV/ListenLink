@@ -39,8 +39,6 @@ export class AppStore {
             console.error({ twilioError, call });
         })
         this.twilioDevice.on('incoming', (call: Call) => {
-            // 1) get flow sid?
-            // 2) get caller ID from Call.paramteres map
             this.currentCall = call;
 
             call.on('cancel', () => {
@@ -53,7 +51,6 @@ export class AppStore {
                 this.resetCurrentCall('disconnect');
                 close();
             });
-
             // invoke a confirmation modal
             open();
         })

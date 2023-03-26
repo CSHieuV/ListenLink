@@ -5,12 +5,15 @@ import { useEffect } from 'react';
 import Navbar from './Navbar';
 import { useDisclosure } from '@mantine/hooks';
 import Emotions from './Emotions';
+import { useNavigate } from 'react-router-dom';
 
 const App = observer(() => {
   const [opened, { open, close }] = useDisclosure(false);
   const appStore = useStore('appStore');
+  const navigate = useNavigate();
   useEffect(() => {
     appStore.init({ open, close });
+    // navigate('/login')
   }, [])
 
   return (
