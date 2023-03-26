@@ -12,19 +12,19 @@ export class AppStore {
     @observable
     currentCall?: Call;
 
+    @observable
+    hasCall?: boolean;
+
     @computed
     get twilioIncomingPhoneNo() {
         return this.currentCall?.parameters?.From;
     }
 
-    @computed
-    get hasCall() {
-        return !!this.twilioIncomingPhoneNo;
-    }
-
     @action
-    resetCurrentCall() {
+    resetCurrentCall(eventName?: string) {
         this.currentCall = undefined;
+        this.hasCall = false;
+        console.log('this was called' + eventName)
     }
 
     @action
@@ -44,11 +44,13 @@ export class AppStore {
             this.currentCall = call;
 
             call.on('cancel', () => {
-                this.resetCurrentCall();
+                if (!this.hasCall) {
+                    this.resetCurrentCall('cancel');
+                }
                 close();
             });
             call.on('disconnect', () => {
-                this.resetCurrentCall();
+                this.resetCurrentCall('disconnect');
                 close();
             });
 
@@ -69,6 +71,7 @@ export class AppStore {
     acceptCall(close: () => void) {
         if (!this.currentCall) return;
         this.currentCall.accept();
+        this.hasCall = true;
         close();
     }
 
@@ -76,7 +79,15 @@ export class AppStore {
     rejectCall(close: () => void) {
         if (!this.currentCall) return;
         this.currentCall.reject();
-        this.resetCurrentCall();
+        this.resetCurrentCall('reject');
         close();
+    }
+
+    @action
+    disconnectCall() {
+        console.log(this.twilioDevice)
+        if (!this.twilioDevice) return;
+        this.twilioDevice.disconnectAll();
+        this.resetCurrentCall('disconnect');
     }
 }

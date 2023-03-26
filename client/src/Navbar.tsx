@@ -1,4 +1,4 @@
-import { IconNotes, IconPhoneOff } from "@tabler/icons-react";
+import { IconPhoneOff } from "@tabler/icons-react";
 import {
     Navbar,
     createStyles,
@@ -8,11 +8,8 @@ import {
     Tooltip,
     Text
 } from '@mantine/core';
-import { useState } from "react";
-
-const routes = [
-    { label: 'Call', icon: IconNotes }
-] as const;
+import { observer } from 'mobx-react-lite';
+import { useStore } from "./stores";
 
 const useStyles = createStyles(theme => ({
     navbar: {
@@ -54,52 +51,30 @@ const useStyles = createStyles(theme => ({
     },
 }))
 
-interface NavbarProps {
-    hasCall: boolean
-}
-
-export default function AppNavbar({ hasCall }: NavbarProps) {
-    const { classes, cx } = useStyles();
-    const [active, setActive] = useState('Call');
-
-    const Link = (item: typeof routes[number]) => (
-        <a
-            className={cx(classes.link, { [classes.linkActive]: item.label === active })}
-            href='#'
-            key={item.label}
-            onClick={(event) => {
-                event.preventDefault();
-                setActive(item.label);
-            }}
-        >
-            <item.icon className={classes.linkIcon} stroke={1.5} />
-            <span>{item.label}</span>
-        </a>
-    )
-
-    const links = routes.map((item) => <Link {...item} key={item.label} />);
+const AppNavbar = observer(() => {
+    const { classes } = useStyles();
+    const appStore = useStore('appStore');
 
     return (
         <Navbar height={840} width={{ sm: 300 }} p="md" className={classes.navbar}>
             <Navbar.Section grow mt="xl">
-                {links}
+                <Stack>
+                    <Text fz="lg" fw={600}>Call with: {appStore.twilioIncomingPhoneNo}</Text>
+                    <Tooltip label="Hang Up">
+                        <ActionIcon
+                            color="red"
+                            variant="filled"
+                            size="xl"
+                            w="100%"
+                            onClick={() => appStore.disconnectCall()}
+                        >
+                            <IconPhoneOff stroke={1.5} />
+                        </ActionIcon>
+                    </Tooltip>
+                </Stack>
             </Navbar.Section>
-            {
-                hasCall && 
-                (
-                    <Navbar.Section grow mb="md">
-                        <Stack>
-                            <Text fz="lg" fw={600}>Call with: </Text>
-                            <Tooltip label="Hang Up">
-                                <ActionIcon color="red" variant="filled" size="xl" w="100%">
-                                    <IconPhoneOff stroke={1.5} />
-                                </ActionIcon>
-                            </Tooltip>
-                        </Stack>
-                    </Navbar.Section>
-                )
-            }
         </Navbar>
     )
-}
+})
 
+export default AppNavbar;
