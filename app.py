@@ -16,6 +16,16 @@ CORS(app)
 sock = Sock(app)
 twilio_client = TwilioClient()
 model = vosk.Model('model')
+if os.environ == "HEROKU":
+    public_url = "listenlink.herokuapp.com"
+else:
+    from pyngrok import ngrok
+    port = 5002
+    public_url = ngrok.connect(port, bind_tls=True).public_url
+print(public_url)
+number = twilio_client.incoming_phone_numbers.list()[0]
+number.update(voice_url=public_url + '/call')
+print(f'Waiting for calls on {number.phone_number}')
 
 CL = '\x1b[0K'
 BS = '\x08'
@@ -89,15 +99,4 @@ def stream(ws):
 
 if __name__ == '__main__':
 
-    if os.environ == "HEROKU":
-        public_url = "listenlink.herokuapp.com"
-    else:
-        from pyngrok import ngrok
-        port = 5002
-        public_url = ngrok.connect(port, bind_tls=True).public_url
-    print(public_url)
-    number = twilio_client.incoming_phone_numbers.list()[0]
-    number.update(voice_url=public_url + '/call')
-    print(f'Waiting for calls on {number.phone_number}')
-
-    app.run(port=port)
+    app.run()
