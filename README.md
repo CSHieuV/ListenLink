@@ -1,6 +1,6 @@
 # ListenLink
 Description: https://devpost.com/software/listenlink
 # Folder Structure
-monorepo but apps deployed separately:
+Single Repository containing both a Flask Application for backend and a React application for frontend
 - `client` for front end
 - `BackendFlask` for back end
